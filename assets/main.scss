@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$max-w-container: 1512px;
+
+*,
+*::after,
+*::before {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  backface-visibility: hidden;
+  font-kerning: normal;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer utilities {
+  .container {
+    @apply mx-auto px-5 lg:px-10;
+    max-width: $max-w-container;
+  }
+
+  .pl-container {
+    @apply pl-2.5 lg:pl-10;
+  }
+
+  .pr-container {
+    @apply pr-2.5 lg:pr-10;
+  }
+
+  .px-container {
+    @apply px-2.5 lg:px-10;
+  }
+
+  .max-w-container {
+    max-width: $max-w-container;
+  }
+}
