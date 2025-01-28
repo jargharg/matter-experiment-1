@@ -105,12 +105,13 @@ export default {
         const runner = Runner.create()
         Runner.run(runner, engine)
 
-        const constraintParams = { isStatic: true, restitution: 0.4, friction: 0.3, render: { visible: false } }
+        const edgeParams = { isStatic: true, restitution: 0.4, friction: 0.3, render: { visible: false } }
 
-        const ground = Bodies.rectangle(maxX / 2, maxY + 50, maxX + 200, 100, constraintParams)
-        const ceiling = Bodies.rectangle(maxX / 2, -50, maxX + 200, 100, constraintParams)
-        const wallRight = Bodies.rectangle(maxX + 50, maxY / 2, 100, maxY, constraintParams)
-        const wallLeft = Bodies.rectangle(-50, maxY / 2, 100, maxY, constraintParams)
+        const ground = Bodies.rectangle(maxX / 2, maxY + 50, maxX + 200, 100, edgeParams)
+        const ceiling = Bodies.rectangle(maxX / 2, -50, maxX + 200, 100, edgeParams)
+        const wallRight = Bodies.rectangle(maxX + 50, maxY / 2, 100, maxY, edgeParams)
+        const wallLeft = Bodies.rectangle(-50, maxY / 2, 100, maxY, edgeParams)
+        const edges = [ground, ceiling, wallRight, wallLeft]
 
         const rockOptions = { density: 0.01, frictionAir: 0.02, render: { visible: false } }
         rock = Bodies.polygon(rockX, rockY, 7, 20, rockOptions)
@@ -136,7 +137,7 @@ export default {
           Composite.add(engine.world, body)
         })
 
-        Composite.add(engine.world, [ground, ceiling, wallLeft, wallRight, rock, elastic])
+        Composite.add(engine.world, [...edges, rock, elastic])
 
         Events.on(engine, 'afterUpdate', function () {
           let hasMoved = false
@@ -148,11 +149,23 @@ export default {
           }
         })
 
-        Events.on(engine, 'collisionStart', (event) => {
-          const pairs = event.pairs
-          for (const pair of pairs) {
-            if (pair.bodyA === rock || pair.bodyB === rock) {
+        Events.on(engine, 'collisionStart', ({ pairs }) => {
+          for (const { bodyA, bodyB } of pairs) {
+            if (bodyA === rock || bodyB === rock) {
               document.body.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 90%)`
+            } else if (edges.includes(bodyA) || edges.includes(bodyB)) {
+              console.log('edge')
+              let textBoxId = null
+              if (edges.includes(bodyA)) {
+                textBoxId = bodyB.id
+                Composite.remove(engine.world, bodyB)
+              } else {
+                textBoxId = bodyA.id
+                Composite.remove(engine.world, bodyA)
+              }
+
+              const textBox = document.getElementById(textBoxId)
+              gsap.to(textBox, { duration: 0.3, opacity: 0, ease: 'none', onComplete: () => textBox.remove() })
             }
           }
         })
