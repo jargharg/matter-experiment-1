@@ -76,7 +76,7 @@ export default {
       }
 
       const setupScene = function () {
-        const { Engine, Render, Runner, Events, Constraint, MouseConstraint, Mouse, Composite, Bodies } = Matter
+        const { Engine, Render, Runner, Events, Constraint, MouseConstraint, Mouse, Composite, Bodies, Query } = Matter
 
         const maxY = elMatter.value.clientHeight
         const maxX = elMatter.value.clientWidth
@@ -122,7 +122,7 @@ export default {
           length: 0.02,
           damping: 0.01,
           stiffness: 0.05,
-          render: { strokeStyle: '#000000', lineWidth: 0.5 },
+          render: { strokeStyle: '#000000', lineWidth: 0.7 },
         })
 
         elsTextBoxes.value.forEach((el, index) => {
@@ -155,7 +155,6 @@ export default {
             if (bodyA === rock || bodyB === rock) {
               document.body.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 90%)`
             } else if (edges.includes(bodyA) || edges.includes(bodyB)) {
-              console.log('edge')
               let textBoxId = null
               if (edges.includes(bodyA)) {
                 textBoxId = bodyB.id
@@ -178,6 +177,17 @@ export default {
             stiffness: 0.1,
             render: { visible: false },
           },
+        })
+
+        Events.on(mouseConstraint, 'mousemove', (event) => {
+          const isTouchingRock = Query.point([rock], event.mouse.position).length > 0
+          const mouseDown = mouseConstraint.mouse.button === 0
+
+          if (!mouseDown && !isTouchingRock) {
+            render.canvas.style.cursor = 'default'
+          } else if (isTouchingRock) {
+            render.canvas.style.cursor = mouseDown ? 'grabbing' : 'grab'
+          }
         })
 
         Composite.add(world, mouseConstraint)
@@ -247,10 +257,14 @@ export default {
   @apply rounded-full h-10 w-10 bg-current cursor-pointer relative;
 
   &.with-caption {
-    &::before {
-      content: '← ← ← ← ←';
-      @apply absolute top-1/2 right-[calc(100%+0.25rem)] whitespace-nowrap text-xs -translate-y-1/2 uppercase font-medium tracking-wide animate-pulse;
+
+    &::before,
+    &::after {
+      content: 'Pull ←';
+      @apply absolute top-1/2 -translate-y-1/2 right-[calc(100%+0.25rem)];
+      @apply whitespace-nowrap text-xs uppercase font-medium tracking-wide animate-pulse;
     }
+
   }
 }
 </style>
