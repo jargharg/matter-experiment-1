@@ -2,8 +2,8 @@
   <div class="relative font-light tracking-tight text-black text-xl">
     <div ref="elMatter" class="absolute top-0 left-0 w-full h-full" />
 
-    <div class="min-h-[100dvh] relative grid grid-cols-2 gap-5 p-10 pointer-events-none">
-      <div class="flex items-center justify-center">
+    <div class="min-h-[100dvh] relative grid md:grid-cols-2 gap-5 p-10 pointer-events-none">
+      <div class="flex items-center justify-center pt-20 md:pt-0">
         <div ref="elRock" class="rock with-caption" />
       </div>
 
@@ -142,7 +142,7 @@ export default {
         Events.on(engine, 'afterUpdate', function () {
           let hasMoved = false
 
-          if (!hasMoved && mouseConstraint.mouse.button === -1 && rock.position.x < rockX - 10) {
+          if (!hasMoved && mouseConstraint.mouse.button === -1 && (rock.position.x < rockX - 10 || rock.position.x > rockX + 10 || rock.position.y < rockY - 10 || rock.position.y > rockY + 10)) {
             elRock.value.classList.remove('with-caption')
             hasMoved = true
             elastic.bodyB = null
@@ -258,11 +258,14 @@ export default {
 
   &.with-caption {
 
-    &::before,
-    &::after {
-      content: 'Pull ←';
-      @apply absolute top-1/2 -translate-y-1/2 right-[calc(100%+0.25rem)];
+    &::before {
+      content: 'Pull';
+      @apply absolute bottom-[calc(100%+0.5rem)] right-1/2 transform translate-x-1/2;
       @apply whitespace-nowrap text-xs uppercase font-medium tracking-wide animate-pulse;
+
+      @screen md {
+        @apply bottom-auto top-1/2 -translate-y-1/2 right-[calc(100%+0.25rem)] translate-x-0;
+      }
     }
 
   }
