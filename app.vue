@@ -4,7 +4,7 @@
 
     <div class="min-h-[100dvh] relative grid grid-cols-2 gap-5 p-10 pointer-events-none">
       <div class="flex items-center justify-center">
-        <div ref="elRock" class="rounded-full h-10 w-10 bg-current cursor-pointer" />
+        <div ref="elRock" class="rock with-caption" />
       </div>
 
       <div class="w-full flex flex-col justify-center">
@@ -122,7 +122,7 @@ export default {
           length: 0.02,
           damping: 0.01,
           stiffness: 0.05,
-          render: { strokeStyle: '#ff0000' },
+          render: { strokeStyle: '#000000', lineWidth: 0.5 },
         })
 
         elsTextBoxes.value.forEach((el, index) => {
@@ -143,6 +143,7 @@ export default {
           let hasMoved = false
 
           if (!hasMoved && mouseConstraint.mouse.button === -1 && rock.position.x < rockX - 10) {
+            elRock.value.classList.remove('with-caption')
             hasMoved = true
             elastic.bodyB = null
             Composite.remove(engine.world, elastic)
@@ -241,4 +242,15 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.rock {
+  @apply rounded-full h-10 w-10 bg-current cursor-pointer relative;
+
+  &.with-caption {
+    &::before {
+      content: '← ← ← ← ←';
+      @apply absolute top-1/2 right-[calc(100%+0.25rem)] whitespace-nowrap text-xs -translate-y-1/2 uppercase font-medium tracking-wide animate-pulse;
+    }
+  }
+}
+</style>
