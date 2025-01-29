@@ -10,10 +10,6 @@ module.exports = {
   theme: {
     container: false,
 
-    fontFamily: {
-      mono: ['Fira Code', 'monospace'],
-    },
-
     extend: {
       screens: {
         sm: '450px',
